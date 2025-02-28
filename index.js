@@ -10,9 +10,20 @@ require('dotenv').config();
 const app = express();
 const port = process.env.PORT || 5000;
 
-// ✅ Enable CORS with specific frontend URL
+// ✅ Enable CORS for both local development and production frontend
+const allowedOrigins = [
+  'http://localhost:3000', // Local frontend
+  'https://campus-placement-mern-frontend.vercel.app' // Deployed frontend
+];
+
 app.use(cors({
-  origin: 'https://campus-placement-mern-frontend.vercel.app', // Replace with your frontend URL
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   methods: 'GET, POST, PUT, DELETE',
   credentials: true
 }));
